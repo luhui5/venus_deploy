@@ -1,0 +1,134 @@
+2022-09-08T21:12:13.531+0800    DEBUG   policy  policy/const.go:20      NETWORK SETUP   {"name": "cali"}
+2022-09-08T21:12:13.539+0800    INFO    dep     dep/sealer_constructor.go:88    Sector-manager initial cfg:
+[Common]
+[Common.API]
+Chain = "/ip4/192.168.4.101/tcp/3453"
+Messager = "/ip4/192.168.4.101/tcp/39812"
+Market = ""
+Gateway = ["/ip4/192.168.4.101/tcp/45132"]
+Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibG92YW4iLCJwZXJtIjoiYWRtaW4iLCJleHQiOiIifQ.Gu_AZ3S5mbmcYXB69-6SBJFaHY2SlOQ6BI0N0VhIapY"
+ChainEventInterval = "1m0s"
+
+[[Common.PieceStores]]
+Name = ""
+Path = ""
+Plugin = ""
+[Common.PieceStores.Meta]
+
+[[Common.PersistStores]]
+Name = "data1"
+Path = "/filecoin/data1"
+Strict = false
+ReadOnly = false
+Weight = 0
+Plugin = ""
+[Common.PersistStores.Meta]
+
+[[Miners]]
+Actor = 39791
+[Miners.Sector]
+InitNumber = 0
+Enabled = true
+EnableDeals = false
+LifetimeDays = 540
+Verbose = false
+[Miners.SnapUp]
+Enabled = false
+Sender = ""
+SendFund = true
+GasOverEstimation = 1.2
+GasOverPremium = 0.0
+GasFeeCap = "5 nanoFIL"
+MaxFeeCap = ""
+MessageConfidence = 15
+ReleaseConfidence = 30
+[Miners.SnapUp.Retry]
+PollInterval = "3m0s"
+APIFailureWait = "3m0s"
+LocalFailureWait = "3m0s"
+[Miners.Commitment]
+Confidence = 10
+[Miners.Commitment.Pre]
+Sender = "f3s4ew3yoqx4bd27dkj4i5sw77mad2jlycorewwu43z32ytwwbwbte7y3sl4l3363ktjpiubsk5vmzgtn6x2kq"
+SendFund = true
+GasOverEstimation = 1.2
+GasOverPremium = 0.0
+GasFeeCap = "5 nanoFIL"
+MaxFeeCap = ""
+[Miners.Commitment.Pre.Batch]
+Enabled = false
+Threshold = 16
+MaxWait = "1h0m0s"
+CheckInterval = "1m0s"
+GasOverEstimation = 1.2
+GasOverPremium = 0.0
+GasFeeCap = "5 nanoFIL"
+MaxFeeCap = ""
+[Miners.Commitment.Prove]
+Sender = "f3s4ew3yoqx4bd27dkj4i5sw77mad2jlycorewwu43z32ytwwbwbte7y3sl4l3363ktjpiubsk5vmzgtn6x2kq"
+SendFund = true
+GasOverEstimation = 1.2
+GasOverPremium = 0.0
+GasFeeCap = "5 nanoFIL"
+MaxFeeCap = ""
+[Miners.Commitment.Prove.Batch]
+Enabled = false
+Threshold = 16
+MaxWait = "1h0m0s"
+CheckInterval = "1m0s"
+GasOverEstimation = 1.2
+GasOverPremium = 0.0
+GasFeeCap = "5 nanoFIL"
+MaxFeeCap = ""
+[Miners.Commitment.Terminate]
+Sender = "f3s4ew3yoqx4bd27dkj4i5sw77mad2jlycorewwu43z32ytwwbwbte7y3sl4l3363ktjpiubsk5vmzgtn6x2kq"
+SendFund = true
+GasOverEstimation = 1.2
+GasOverPremium = 0.0
+GasFeeCap = "5 nanoFIL"
+MaxFeeCap = ""
+[Miners.Commitment.Terminate.Batch]
+Enabled = false
+Threshold = 5
+MaxWait = "1h0m0s"
+CheckInterval = "1m0s"
+GasOverEstimation = 1.2
+GasOverPremium = 0.0
+GasFeeCap = "5 nanoFIL"
+MaxFeeCap = ""
+[Miners.PoSt]
+Sender = "f3ugdmrl5ypns3m6hphef6atn4dukitzm45aq7opgngacb7hwaihmgk3yremwtbxz3c2zzur5pozvidfwqdyya"
+Enabled = true
+StrictCheck = true
+Parallel = false
+GasOverEstimation = 1.2
+GasOverPremium = 0.0
+GasFeeCap = "5 nanoFIL"
+MaxFeeCap = ""
+Confidence = 10
+SubmitConfidence = 0
+ChallengeConfidence = 0
+MaxRecoverSectorLimit = 0
+MaxPartitionsPerPoStMessage = 0
+MaxPartitionsPerRecoveryMessage = 0
+[Miners.Proof]
+Enabled = false
+
+
+2022-09-08T21:12:13.540+0800    INFO    dep     dep/prover.go:61        ext porver initial cfg:
+WinPost = []
+
+[[WdPost]]
+Args = []
+Concurrent = 1
+Weight = 1
+ReadyTimeoutSecs = 5
+[WdPost.Envs]
+CUDA_VISIBLE_DEVICES = "0"
+TMPDIR = "/tmp/ext-prover0/"
+
+
+error: Found argument 'window_post' which wasn't expected, or isn't valid in this context
+
+USAGE:
+    venus-worker processor [SUBCOMMAND]

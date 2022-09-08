@@ -29,6 +29,11 @@ venus wallet new
 ```
 venus wallet export walletname
 ```
+### 修改监听端口 ~/.venus/config.json，修改完成后重启venus
+```
+"apiAddress": "/ip4/0.0.0.0/tcp/3453",
+```
+
 
 ## 4. 运行message
 ```
@@ -56,7 +61,10 @@ nohup venus-wallet run \
 --gateway-token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibG92YW4iLCJwZXJtIjoiYWRtaW4iLCJleHQiOiIifQ.Gu_AZ3S5mbmcYXB69-6SBJFaHY2SlOQ6BI0N0VhIapY \
 > wallet.log 2>&1 &
 ```
-
+### 修改监听ip ~/.venus_wallet/config.toml
+```
+ListenAddress = "/ip4/0.0.0.0/tcp/5678/http"
+```
 
 ### 设置wallet密码
 ```
@@ -115,17 +123,55 @@ roots@worker101:~$ venus-sector-manager --net cali util miner create --from=t3s4
 ## 9. 更新~/.venus-sector-manager/sector-manager.cfg
 [sector-manager.cfg](sector-manager.cfg)
 
-## 10. 启动 poster
+## 10. 启动 venus-sector-manager(分离可能有问题，暂时先这样)
+详情阅读： [https://github.com/ipfs-force-community/venus-cluster/blob/main/docs/zh/09.%E7%8B%AC%E7%AB%8B%E8%BF%90%E8%A1%8C%E7%9A%84poster%E8%8A%82%E7%82%B9.md](https://github.com/ipfs-force-community/venus-cluster/blob/main/docs/zh/09.%E7%8B%AC%E7%AB%8B%E8%BF%90%E8%A1%8C%E7%9A%84poster%E8%8A%82%E7%82%B9.md)
+配置并启动源节点
 ```
-nohup venus-sector-manager --net cali  daemon run --poster > ~/poster.log 2>&1 &
+nohup venus-sector-manager --net cali daemon run --miner > ~/win.log 2>&1 &
+```
+现在配置另一台机器
+```
+# 拷贝源节点的 ~/.venus-sector-manager/sector-manager.cfg
+
+# 修改Chain = "/ip4/127.0.0.1/tcp/3453"等为内网地址
+
+# 先init出配置文件
+venus-sector-manager --home=~/.venus-individual-poster daemon init
+
+# 修改配置文件 ext-prover.cfg
+[[WdPost]]
+[WdPost.Envs]
+CUDA_VISIBLE_DEVICES = "0"
+TMPDIR = "/tmp/ext-prover0/"
+
+# 启动prover
+# venus-sector-manager --home=~/.venus-individual-poster daemon run --proxy="127.0.0.1:1789" --poster --listen=":2789" --conf-dir="~/.venus-sector-manager" --ext-prover
+nohup venus-sector-manager --home ~/.venus-sector-manager2 daemon run --proxy="192.168.4.101:1789" --listen=":2789" --conf-dir="~/.venus-sector-manager" --poster > poster.log 2>&1 &
 ```
 
-## 11. 在另一台服务器上启动winner
-### 挂载数据盘
-应该要的吧，以防万一
+## 11. 安装必要工具
+```
+# 安装必要的工具. 
+sudo apt install -y wget make gcc
+# 下载 hwloc-2.7.1.tar.gz
+wget https://download.open-mpi.org/release/hwloc/v2.7/hwloc-2.7.1.tar.gz
 
-### 拷贝poster上的sector-manager.cfg到 ~/.venus-sector-manager/sector-manager.cfg
-`如果使用Chain = "/ip4/127.0.0.1/tcp/3453"等127.0.0.1的ip，记得修改为内网IP`
+tar -zxpf hwloc-2.7.1.tar.gz
+cd hwloc-2.7.1
+./configure --prefix=/usr/local
+make -j$(nproc)
+sudo make install
+ldconfig /usr/local/lib
+
+sudo apt install ocl-icd-opencl-dev
 ```
 
+## 11.venus-worker
+### 计算最优解的官方文档
+[https://github.com/ipfs-force-community/venus-cluster/blob/main/docs/zh/12.venus-worker-util.md](https://github.com/ipfs-force-community/venus-cluster/blob/main/docs/zh/12.venus-worker-util.md)
+### 拷贝必要的包去worker
 ```
+sudo scp username@ip:/home/roots/venus/venus-cluster/dist/bin/venus* /usr/local/bin/
+```
+### 配置 venus-worker.toml
+[venus-worker.toml](venus-worker.toml)
