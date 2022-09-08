@@ -1,77 +1,46 @@
 [sector_manager]
 rpc_client.addr = "/ip4/192.168.4.101/tcp/1789"
 
-# 根据实际资源规划
-[[sealing_thread]]
-location = "/worker-data/1"
-
-[[sealing_thread]]
-location = "/worker-data/2"
-
-[[sealing_thread]]
-location = "/worker-data/3"
-
-[[sealing_thread]]
-location = "/worker-data/4"
-
-[[sealing_thread]]
-location = "/worker-data/5"
-
-[[sealing_thread]]
-location = "/worker-data/6"
-
-[[sealing_thread]]
-location = "/worker-data/7"
-
-[[sealing_thread]]
-location = "/worker-data/8"
-
-
-# [remote_store]
-# name = "{remote store name}"
-# location = "{path to remote store}"
 [attached_selection]
 [[attached]]
 location = "/filecoin/data1"
 # readonly = true
 
 [processors.static_tree_d]
-2KiB = "/var/tmp/2k/sc-02-data-tree-d.dat"
-32GiB = "/var/tmp/32g/sc-02-data-tree-d.dat"
-64GiB = "/var/tmp/64g/sc-02-data-tree-d.dat"
+32GiB = "/worker-data/32g/sc-02-data-tree-d.dat"
+#64GiB = "/var/tmp/64g/sc-02-data-tree-d.dat"
 
 # 根据实际资源规划
 [processors.limitation.concurrent]
-pc1 = 4
-pc2 = 2
+add_pieces = 1
+pc1 = 13
+pc2 = 1
 c2 = 1
+
+[processors.ext_locks]
+gpu = 0
+
+# 根据实际资源规划
+[sealing]
+[[sealing_thread]]
+location = "/worker-data/store1"
 
 [[processors.pc1]]
 numa_preferred = 0
-cgroup.cpuset = "0-7"
-concurrent = 2
+# cgroup.cpuset = "0-51"
+concurrent = 13
 envs = { FIL_PROOFS_USE_MULTICORE_SDR = "1" }
 
-[[processors.pc1]]
-numa_preferred = 1
-cgroup.cpuset = "12-19"
-concurrent = 2
-envs = { FIL_PROOFS_USE_MULTICORE_SDR = "1" }
-
-
 [[processors.pc2]]
-cgroup.cpuset = "8-11,24-27"
-envs = { FIL_PROOFS_USE_GPU_COLUMN_BUILDER = "1", FIL_PROOFS_USE_GPU_TREE_BUILDER = "1", CUDA_VISIBLE_DEVICES = "0" }
-
-[[processors.pc2]]
-cgroup.cpuset = "20-23,36-39"
-envs = { FIL_PROOFS_USE_GPU_COLUMN_BUILDER = "1", FIL_PROOFS_USE_GPU_TREE_BUILDER = "1", CUDA_VISIBLE_DEVICES = "1" }
-
+# cgroup.cpuset = "52-55"
+envs = { FIL_PROOFS_USE_GPU_COLUMN_BUILDER = "1", FIL_PROOFS_USE_GPU_TREE_BUILDER = "1"}
+locks = ["gpu"]
+concurrent = 1
 
 [[processors.c2]]
-cgroup.cpuset = "28-35"
-envs = { CUDA_VISIBLE_DEVICES = "2,3" }
-
+# cgroup.cpuset = "56-59"
+locks = ["gpu"]
+concurrent = 1
 
 [[processors.tree_d]]
-cgroup.cpuset = "40-45"
+# cgroup.cpuset = "60-64"

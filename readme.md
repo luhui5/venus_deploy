@@ -175,3 +175,24 @@ sudo scp username@ip:/home/roots/venus/venus-cluster/dist/bin/venus* /usr/local/
 ```
 ### 配置 venus-worker.toml
 [venus-worker.toml](venus-worker.toml)
+
+### 12. 启动worker
+配置sealing  dir
+```
+venus-worker store sealing-init -l <dir1> <dir2> <dir3> <...>
+```
+
+配置持久化数据目录
+```
+venus-worker store file-init -l <dir1>
+```
+
+配置tree-d
+```
+venus-worker generator tree-d -p /worker-data/32g -s 32GiB
+```
+
+启动worker
+```
+nohup venus-worker daemon -c venus-worker.toml > worker.log 2>&1 &
+```
