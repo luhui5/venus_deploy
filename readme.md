@@ -113,12 +113,19 @@ roots@worker101:~$ venus-sector-manager --net cali util miner create --from=t3s4
 ```
 
 ## 9. 更新~/.venus-sector-manager/sector-manager.cfg
-若其中有变动，请查看sector-manager.cfg
-![config](sector-manager.cfg)
-
-
+[sector-manager.cfg](sector-manager.cfg)
 
 ## 10. 启动 poster
 ```
 nohup venus-sector-manager --net cali  daemon run --poster > ~/poster.log 2>&1 &
+```
+
+## 11. 在另一台服务器上启动winner
+### 挂载数据盘
+应该要的吧，以防万一
+
+### 拷贝poster上的sector-manager.cfg到 ~/.venus-sector-manager/sector-manager.cfg
+`如果使用Chain = "/ip4/127.0.0.1/tcp/3453"等127.0.0.1的ip，记得修改为内网IP`
+```
+
 ```
