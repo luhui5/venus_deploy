@@ -1,21 +1,56 @@
 # Venus cluster deploy
 先进行编译，自行查找官方文档
 
-## 1. 运行venus-auth
+## 1. venus-auth
+运行venus-auth  
+默认目录 ~/.venus-auth  或者 ~/.auth_home  
+默认监听端口8989
 ```
-nohup auth-server run > ~/auth.log 2>&1 &
+nohup venus-auth run > ~/auth.log 2>&1 &
 ```
 
-## 2. 运行gateway
+生成token
+```
+venus-auth token gen --perm admin sometoken
+```
+查看所拥有的token
+```
+venus-auth token list
+```
+[auth_token](images/auth_token.jpg)
+添加user
+```
+venus-auth user add someuser
+```
+list user
+```
+~$ venus-auth user list
+number: 1
+name: someuser
+state: enabled
+createTime: Sat, 10 Sep 2022 18:18:44 CST
+updateTime: Sat, 10 Sep 2022 18:18:44 CST
+```
+设置 user 可用,否则在其他组件请求 user 列表时请求不到.
+```
+ venus-auth user update --name=someuser --state=1
+```
+## 2. gateway
+默认端口 45132  
+默认目录 ~/.venusgateway/  
 ```
 nohup venus-gateway --listen /ip4/0.0.0.0/tcp/45132 run \
 --auth-url   http://127.0.0.1:8989 \
-> venus-gateway.log 2>&1 &
+> ~/venus-gateway.log 2>&1 &
 ```
 
 ## 3. 运行venus   daemon
 ```
-nohup venus daemon --repodir=/worker-data/lotus --network=cali --auth-url http://127.0.0.1:8989 > venus.log 2>&1 &
+nohup venus daemon \
+--repodir=/worker-data/lotus \
+--network=cali \
+--auth-url http://127.0.0.1:8989 \
+> ~/venus.log 2>&1 &
 ```
 ### 设置密码
 ```
