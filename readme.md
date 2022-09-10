@@ -17,7 +17,8 @@ venus-auth token gen --perm admin sometoken
 ```
 venus-auth token list
 ```
-[auth_token](images/auth_token.jpg)
+![auth_token](images/auth_token.jpg)
+
 添加user
 ```
 venus-auth user add someuser
@@ -70,30 +71,21 @@ venus wallet export walletname
 ```
 
 
-## 4. 运行message
+## 4. message
 ```
 nohup venus-messager run \
 --auth-url http://127.0.0.1:8989 \
 --node-url /ip4/127.0.0.1/tcp/3453 \
 --gateway-url /ip4/127.0.0.1/tcp/45132 \
---auth-token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibG92YW4iLCJwZXJtIjoiYWRtaW4iLCJleHQiOiIifQ.Gu_AZ3S5mbmcYXB69-6SBJFaHY2SlOQ6BI0N0VhIapY \
+--auth-token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic29tZXRva2VuIiwicGVybSI6ImFkbWluIiwiZXh0IjoiIn0.m6nj7K0g9fqUcyxBxAdgI4_e1TmkF37KalXitC7Am4U \
 > msg.log 2>&1 &
-
-nohup venus-messager run \
---auth-url http://127.0.0.1:8989 \
---node-url /ip4/127.0.0.1/tcp/3453 \
---gateway-url /ip4/127.0.0.1/tcp/45132 \
---node-token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibG92YW4iLCJwZXJtIjoiYWRtaW4iLCJleHQiOiIifQ.Gu_AZ3S5mbmcYXB69-6SBJFaHY2SlOQ6BI0N0VhIapY \
---gateway-token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibG92YW4iLCJwZXJtIjoiYWRtaW4iLCJleHQiOiIifQ.Gu_AZ3S5mbmcYXB69-6SBJFaHY2SlOQ6BI0N0VhIapY \
---auth-token  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibG92YW4iLCJwZXJtIjoiYWRtaW4iLCJleHQiOiIifQ.Gu_AZ3S5mbmcYXB69-6SBJFaHY2SlOQ6BI0N0VhIapY \
-> ~/msg.log 2>&1 &
 ```
 
 ## 5. 启动wallet
 ```
 nohup venus-wallet run \
 --gateway-api /ip4/127.0.0.1/tcp/45132 \
---gateway-token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibG92YW4iLCJwZXJtIjoiYWRtaW4iLCJleHQiOiIifQ.Gu_AZ3S5mbmcYXB69-6SBJFaHY2SlOQ6BI0N0VhIapY \
+--gateway-token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic29tZXRva2VuIiwicGVybSI6ImFkbWluIiwiZXh0IjoiIn0.m6nj7K0g9fqUcyxBxAdgI4_e1TmkF37KalXitC7Am4U \
 > wallet.log 2>&1 &
 ```
 ### 修改监听ip ~/.venus_wallet/config.toml
@@ -110,12 +102,13 @@ venus-wallet setpwd
 venus-wallet import key
 ```
 ### 启用support wallet
+不太确定是加token name还是user name，我把两个都加上了
 ```
 venus-wallet support lovan(token name)
 ```
 
 ## 6. gateway验证
-![gatewayimage](gateway.png)
+![gatewayimage](images/gateway_wallet_list.jpg)
 
 
 ## 7. 初始化工作目录（--net来选择网络）
@@ -158,11 +151,16 @@ roots@worker101:~$ venus-sector-manager --net cali util miner create --from=t3s4
 ## 9. 更新~/.venus-sector-manager/sector-manager.cfg
 [sector-manager.cfg](sector-manager.cfg)
 
-## 10. 启动 venus-sector-manager(分离可能有问题，暂时先这样)
+## 10. user添加miner id
+```
+venus-auth user miner add someuser f039791
+```
+
+## 11. 启动 venus-sector-manager(分离可能有问题，暂时先这样)
 详情阅读： [https://github.com/ipfs-force-community/venus-cluster/blob/main/docs/zh/09.%E7%8B%AC%E7%AB%8B%E8%BF%90%E8%A1%8C%E7%9A%84poster%E8%8A%82%E7%82%B9.md](https://github.com/ipfs-force-community/venus-cluster/blob/main/docs/zh/09.%E7%8B%AC%E7%AB%8B%E8%BF%90%E8%A1%8C%E7%9A%84poster%E8%8A%82%E7%82%B9.md)
 配置并启动源节点
 ```
-nohup venus-sector-manager --net cali daemon run --miner > ~/win.log 2>&1 &
+nohup venus-sector-manager --net cali daemon run --miner > ~/miner.log 2>&1 &
 ```
 现在配置另一台机器
 ```
@@ -181,7 +179,7 @@ TMPDIR = "/tmp/ext-prover0/"
 
 # 启动prover
 # venus-sector-manager --home=~/.venus-individual-poster daemon run --proxy="127.0.0.1:1789" --poster --listen=":2789" --conf-dir="~/.venus-sector-manager" --ext-prover
-nohup venus-sector-manager --home ~/.venus-sector-manager2 daemon run --proxy="192.168.4.101:1789" --listen=":2789" --conf-dir="~/.venus-sector-manager" --poster > poster.log 2>&1 &
+nohup venus-sector-manager --net cali --home ~/.venus-sector-manager2 daemon run --proxy="192.168.4.101:1789" --listen=":2789" --conf-dir="~/.venus-sector-manager" --poster > ~/poster.log 2>&1 &
 ```
 
 ## 11. 安装必要工具
@@ -229,5 +227,5 @@ venus-worker generator tree-d -p /worker-data/32g -s 32GiB
 
 启动worker
 ```
-nohup venus-worker daemon -c venus-worker.toml > worker.log 2>&1 &
+nohup venus-worker daemon -c venus-worker.cfg > worker.log 2>&1 &
 ```
