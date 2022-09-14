@@ -19,7 +19,7 @@ sudo apt install ocl-icd-opencl-dev
 ```
 
 ## 2. venus-auth
-官方文档：https://github.com/filecoin-project/venus-auth/blob/master/docs/zh/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B.md
+官方文档：https://github.com/filecoin-project/venus-auth/blob/master/docs/zh/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B.md  
 **编译**
 ```
 git clone https://github.com/filecoin-project/venus-auth.git
