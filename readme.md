@@ -1,8 +1,37 @@
 # Venus cluster deploy
 先进行编译，自行查找官方文档
 
-## 1. venus-auth
-运行venus-auth  
+## 1. 安装必要工具
+```
+# 安装必要的工具. 
+sudo apt install -y wget make gcc
+# 下载 hwloc-2.7.1.tar.gz
+wget https://download.open-mpi.org/release/hwloc/v2.7/hwloc-2.7.1.tar.gz
+
+tar -zxpf hwloc-2.7.1.tar.gz
+cd hwloc-2.7.1
+./configure --prefix=/usr/local
+make -j$(nproc)
+sudo make install
+ldconfig /usr/local/lib
+
+sudo apt install ocl-icd-opencl-dev
+```
+
+## 2. venus-auth
+官方文档：https://github.com/filecoin-project/venus-auth/blob/master/docs/zh/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B.md
+**编译**
+```
+git clone https://github.com/filecoin-project/venus-auth.git
+cd venus-auth/
+git checkout v1.7.0
+make
+sudo cp venus-auth /usr/local/venus/
+
+$ venus-auth -v
+venus-auth version 1.7.0+git.f06ab8a
+```
+**运行venus-auth**  
 默认目录 ~/.venus-auth  或者 ~/.auth_home  
 默认监听端口8989
 ```
@@ -36,7 +65,33 @@ updateTime: Sat, 10 Sep 2022 18:18:44 CST
 ```
  venus-auth user update --name=someuser --state=1
 ```
+添加miner id
+```
+venus-auth user miner add someuser $minerid
+```
+
+验证是否添加miner
+```
+~$ venus-auth user list someuser
+number: 1
+name: someuser
+state: enabled
+miners: [f0****]
+createTime: Wed, 14 Sep 2022 19:51:36 CST
+updateTime: Wed, 14 Sep 2022 19:51:36 CST
+```
 ## 2. gateway
+**编译**
+```
+git clone https://github.com/ipfs-force-community/venus-gateway.git
+cd venus-gateway/
+git checkout v1.7.0
+make
+
+$ venus-gateway -v
+venus-gateway version v1.7.0+git.cf83d14
+```
+**启动**
 默认端口 45132  
 默认目录 ~/.venusgateway/  
 ```
@@ -45,13 +100,33 @@ nohup venus-gateway --listen /ip4/0.0.0.0/tcp/45132 run \
 > ~/venus-gateway.log 2>&1 &
 ```
 
-## 3. 运行venus   daemon
+## 3. venus
+**编译**
+```
+git clone https://github.com/filecoin-project/venus.git
+cd venus
+git checkout v1.7.1
+make deps
+make
+sudo cp venus /usr/local/venus/
+
+$ venus -v
+{
+        "Version": "1.7.1+git.807a2a13"
+}
+```
+**cali运行venus**
 ```
 nohup venus daemon \
 --repodir=/worker-data/lotus \
 --network=cali \
 --auth-url http://127.0.0.1:8989 \
 > ~/venus.log 2>&1 &
+```
+**mainnet运行**
+```
+#导入快照
+
 ```
 ### 设置密码
 ```
@@ -110,6 +185,38 @@ venus-wallet support lovan(token name)
 ## 6. gateway验证
 ![gatewayimage](images/gateway_wallet_list.jpg)
 
+## 7. venus-miner
+```
+venus-miner init \
+--auth-api http://127.0.0.1:8989 \
+--token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic29tZXRva2VuIiwicGVybSI6ImFkbWluIiwiZXh0IjoiIn0.m6nj7K0g9fqUcyxBxAdgI4_e1TmkF37KalXitC7Am4U \
+--gateway-api /ip4/127.0.0.1/tcp/45132 \
+--api /ip4/127.0.0.1/tcp/3453 \
+--slash-filter local
+```
+
+```
+nohup venus-miner run > miner.log 2>&1 &
+```
+
+## 7. venus-market
+venus-wallet 生成token
+```
+~$ venus-wallet auth create-token --perm admin
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.XTKfgvZf3J-q-hDLgc2wX3OlUDnVqeOnW9o7Vmdjm2o
+```
+```
+venus-market pool-run \
+--node-url=/ip4/127.0.0.1/tcp/3453/ \
+--auth-url=http://127.0.0.1:8989 \
+--gateway-url=/ip4/127.0.0.1/tcp/45132/ \
+--messager-url=/ip4/127.0.0.1/tcp/39812/ \
+--auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic29tZXRva2VuIiwicGVybSI6ImFkbWluIiwiZXh0IjoiIn0.m6nj7K0g9fqUcyxBxAdgI4_e1TmkF37KalXitC7Am4U 
+```
+```
+# 本地文件系统存储
+venus-market piece-storage add-fs --path="/filecoin/data1/piecestore" --name="local"
+```
 
 ## 7. 初始化工作目录（--net来选择网络）
 ```
@@ -160,7 +267,8 @@ venus-auth user miner add someuser f039791
 详情阅读： [https://github.com/ipfs-force-community/venus-cluster/blob/main/docs/zh/09.%E7%8B%AC%E7%AB%8B%E8%BF%90%E8%A1%8C%E7%9A%84poster%E8%8A%82%E7%82%B9.md](https://github.com/ipfs-force-community/venus-cluster/blob/main/docs/zh/09.%E7%8B%AC%E7%AB%8B%E8%BF%90%E8%A1%8C%E7%9A%84poster%E8%8A%82%E7%82%B9.md)
 配置并启动源节点
 ```
-nohup venus-sector-manager --net cali daemon run --miner > ~/miner.log 2>&1 &
+nohup venus-sector-manager --net cali daemon run --miner > ~/vsm.log 2>&1 &
+nohup venus-sector-manager --net cali daemon run --miner --poster > ~/vsm.log 2>&1 &
 ```
 现在配置另一台机器
 ```
@@ -180,23 +288,6 @@ TMPDIR = "/tmp/ext-prover0/"
 # 启动prover
 # venus-sector-manager --home=~/.venus-individual-poster daemon run --proxy="127.0.0.1:1789" --poster --listen=":2789" --conf-dir="~/.venus-sector-manager" --ext-prover
 nohup venus-sector-manager --net cali --home ~/.venus-sector-manager2 daemon run --proxy="192.168.4.101:1789" --listen=":2789" --conf-dir="~/.venus-sector-manager" --poster > ~/poster.log 2>&1 &
-```
-
-## 11. 安装必要工具
-```
-# 安装必要的工具. 
-sudo apt install -y wget make gcc
-# 下载 hwloc-2.7.1.tar.gz
-wget https://download.open-mpi.org/release/hwloc/v2.7/hwloc-2.7.1.tar.gz
-
-tar -zxpf hwloc-2.7.1.tar.gz
-cd hwloc-2.7.1
-./configure --prefix=/usr/local
-make -j$(nproc)
-sudo make install
-ldconfig /usr/local/lib
-
-sudo apt install ocl-icd-opencl-dev
 ```
 
 ## 11.venus-worker
